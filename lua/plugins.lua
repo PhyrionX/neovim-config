@@ -2,6 +2,14 @@
 vim.cmd [[packadd packer.nvim]]
 
 return require('packer').startup(function(use)
+  -- Añade el bloque de configuración para Telescope.nvim
+  use {
+    'nvim-telescope/telescope.nvim',
+    requires = { 'nvim-lua/plenary.nvim' }, -- Dependencia necesaria
+    config = function()
+      require("plugins.telescope") -- Cargar la configuración de Telescope desde el archivo separado
+    end
+  }
   -- Packer se administra a sí mismo
   use 'wbthomason/packer.nvim'
   
@@ -10,8 +18,6 @@ return require('packer').startup(function(use)
   use 'nvim-tree/nvim-web-devicons'            -- Iconos 
   -- Temas
   use 'folke/tokyonight.nvim'                  -- Tema Tokyo Night
-  use { 'akinsho/bufferline.nvim', requires = 'nvim-tree/nvim-web-devicons' }  -- Barra de buffers
-  use { 'nvim-lualine/lualine.nvim', requires = 'nvim-tree/nvim-web-devicons' } -- Barra de estado 
    
   -- Soporte LSP (Language Server Protocol)
   use 'neovim/nvim-lspconfig'
