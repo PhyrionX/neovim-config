@@ -1,0 +1,87 @@
+-- Inicializar Packer
+vim.cmd [[packadd packer.nvim]]
+
+require('packer').startup(function(use)
+    -- Packer puede manejarse a sí mismo
+    use 'wbthomason/packer.nvim'
+    use {
+  	'nvim-telescope/telescope.nvim', tag = '0.1.0',
+ 	 requires = { {'nvim-lua/plenary.nvim'} }
+    }
+    -- Añadir tus plugins aquí
+    -- Ejemplo: tema de colores
+    use 'morhetz/gruvbox'
+    
+    -- Ejemplo: Navegador de archivos
+    use 'kyazdani42/nvim-tree.lua'
+    
+    -- LSP Config
+    use 'neovim/nvim-lspconfig'
+end)
+
+require'nvim-tree'.setup {
+    -- Configuración general
+    disable_netrw = true,
+    hijack_netrw = true,
+    update_cwd = true,
+
+    -- Diagnósticos de LSP
+    diagnostics = {
+        enable = true,  -- Activa los diagnósticos del LSP
+        show_on_dirs = true, -- Muestra diagnósticos en carpetas también
+        icons = {
+            hint = "",
+            info = "",
+            warning = "",
+            error = "",
+        }
+    },
+
+    -- Configuración de la vista
+    --
+    view = {
+        width = 30,
+        side = 'left',
+    },
+   -- Aquí configuramos los mapeos de teclas personalizados
+    on_attach = function(bufnr)
+        local api = require('nvim-tree.api')
+        
+        -- Definir una función auxiliar para crear atajos de teclado
+        local function opts(desc)
+            return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+        end
+
+        -- Mapeos personalizados
+        vim.keymap.set('n', 's', api.node.open.horizontal, opts('Open in Split'))
+        vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open in Vertical Split'))
+        vim.keymap.set('n', 't', api.node.open.tab, opts('Open in New Tab'))
+    end,
+
+    actions = {
+        open_file = {
+            quit_on_open = false,  -- Mantener el tree abierto al abrir un archivo
+        }
+    }
+}
+
+-- Atajos de teclado básicos
+vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', 'jk', '<Esc>', { noremap = true })  -- Para salir del modo insertar rápidamente
+
+
+-- Abrir NvimTree automáticamente cuando no haya otro buffer
+vim.api.nvim_create_autocmd({ "VimEnter" }, {
+    callback = function()
+        -- Abre NvimTree si no se pasa un archivo en el argumento
+        if vim.fn.argc() == 0 then
+            require("nvim-tree.api").tree.open()
+        end
+    end
+})
+
+
+-- Configuración para el tema Gruvbox
+vim.cmd [[colorscheme gruvbox]]
+vim.o.background = "dark"  -- Puedes cambiar a 'light' si prefieres
+
